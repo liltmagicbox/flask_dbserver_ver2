@@ -1,7 +1,10 @@
 jar = 'dumpjar'
+
+statics = 'static'
 origins = 'static/origin'
 resizeds = 'static/resized'
 thumbs = 'static/thumb'
+
 pastebin = 'pastebin'
 txtFiledir = ''
 
@@ -37,27 +40,33 @@ import shutil
 
 def makedirs():
     try:
-        os.mkdir( os.getcwd()+'/'+origins )        
+        os.mkdir( os.getcwd()+'/'+statics )
+        print('statics done')
+    except:
+        pass
+    try:
+        os.mkdir( os.getcwd()+'/'+origins )
+        print('origin done')
     except:
         pass
     try:
         os.mkdir( os.getcwd()+'/'+resizeds )
+        print('resizeds done')
     except:
         pass
     try:
         os.mkdir( os.getcwd()+'/'+thumbs )
+        print('thumbs done')
     except:
-        pass
-    try:
-        os.mkdir( os.getcwd()+'/'+thumbs )
-    except:
-        pass
+        pass    
     try:
         os.mkdir( pastebin )
+        print('pastebin done')
     except:
         pass
     try:
         os.mkdir( jar )
+        print('jar done')
     except:
         pass
     print('all allready.')
@@ -83,7 +92,7 @@ def getJar(oldDatas,jarList):
             del parsedDict['태그']
         else:
             parsedDict['유저태그'] = []
-        
+
 
         if '제목' in parsedDict.keys():
             if parsedDict['제목'].startswith('[번역]'):
@@ -156,6 +165,7 @@ def appendDict(oldDict,newDict):
 ##oldDatas = datas
 
 def jarScan(datas):
+    makedirs()
     jsonName = 'datas.json'
     jarList = os.listdir(jar)
     if not len(jarList) == 0:
@@ -228,7 +238,7 @@ def resizeImg(newDatas):
             os.mkdir( os.path.join(resizeds, no))
         except:
             print('no resizeds dir already!! ')
-            
+
         thumbList = []
         try:
             os.mkdir( os.path.join(thumbs, no))
