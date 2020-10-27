@@ -12,10 +12,10 @@ app = Flask(__name__)
 
 
 #--------------------------------------------------------
-
+#i love it! it exports only if is.
 
 def getHeaddict(datas):
-    headKeys = ['제목','날짜','리사이즈','태그']
+    headKeys = ['제목','날짜','리사이즈','태그', '유저태그', '조회수','댓글수','추천수']
     headDict = {}
     for d in datas.values():
         tempDict = {}
@@ -66,6 +66,7 @@ def staticFile(filenameinput):
     print('filenameinput',filenameinput)
     #return send_file( filename=filenameinput )
     return send_file( filename_or_fp = filenameinput )
+    #http://localhost:12800/static/mah.txt로 접속시,staic폴더안에연결됨.ㅇㅋ
 
 
 @app.route('/server_info')
@@ -102,12 +103,18 @@ def headExport():
     headDict = getHeaddict(datas)
     print('headDict: ',len(headDict))
     minidb.txt2dict.saveVarjson(headDict,headdictPath,'datas')
-    return 'haha'
+    return 'headgone'
 
 @app.route('/backupdatas')
 def backupDatas():
     global datas
-    datasdictPath = './b_datas.json'
+    flist = os.listdir()
+    no=0
+    while 'b{}_datas.json'.format(no) in flist:
+        no+=1
+    print(no)
+    #datasdictPath = './b_datas.json'
+    datasdictPath = './b{}_datas.json'.format(no)
     print('datas: ',len(datas))
     minidb.txt2dict.saveJson(datas,datasdictPath)
     return 'datas saved'

@@ -1,0 +1,13 @@
+깔끔하게 자체폴더생성도 해 주고.
+static은 일단 공용폴더니 알아두시고 html용파일들넣기. 참고로 send_file 기본이 여기로 연결됨.
+templates에 html넣고.
+대체로 잘 들어가고,
+dict를 datas.json을 처음 로드해서, 일단 로드한뒤엔 jarscan으로 돌릴만한데, 돌리면 추가된다.
+localhost:12800/jarscan
+돌리고나면 dict가 보유중인상태.ㅇㅋ. 270개 90초걸림.
+참고로 280개에 10메가먹고있다.ㅋㅋㅋㅋㅋ..
+
+http://localhost:12800/headexport
+http://localhost:12800/backupdatas
+둘다 매우 잘 됨.ㅇㅋ.
+ajax외엔 더 손댈건 우선은 없겠다.

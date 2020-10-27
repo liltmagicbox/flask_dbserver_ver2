@@ -1,0 +1,12 @@
+12초만에 279개 폴더 로드함.
+60초경과.. cpu25..
+289..! 90초정도걸렸다. 오지군; 초당3개처리.ㅇㅋ.
+all dirs allready.
+jar List length of:  279
+all dirs allready.
+jar List appended:  279
+imgs resized:  494
+good, dict appended
+new Dict appended:  279 finally : 289
+json saved:datas.json length of:  289
+127.0.0.1 - - [28/Oct/2020 01:51:28] "[37mGET /jarscan HTTP/1.1[0m" 200 -

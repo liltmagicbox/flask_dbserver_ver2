@@ -58,7 +58,7 @@ def makedirs():
         os.mkdir( os.getcwd()+'/'+thumbs )
         print('thumbs done')
     except:
-        pass    
+        pass
     try:
         os.mkdir( pastebin )
         print('pastebin done')
@@ -69,7 +69,7 @@ def makedirs():
         print('jar done')
     except:
         pass
-    print('all allready.')
+    print('all dirs allready.')
 
 'notice it can move origin to origin. good for test!!'
 #load jar, read txt, if not in dict:add , copy origins,move pastebin.
@@ -163,11 +163,17 @@ def appendDict(oldDict,newDict):
 
 ##datas={}
 ##oldDatas = datas
-
+'note that it loads dict, usually already was datas.json.. and adds.fine.'
 def jarScan(datas):
     makedirs()
     jsonName = 'datas.json'
     jarList = os.listdir(jar)
+    for i in jarList:
+        if i.find('.txt') != -1:
+            shutil.move( os.path.join(jar, i) ,pastebin)
+            print('txtfile!!!moved to trashbin.')
+            jarList = os.listdir(jar)
+
     if not len(jarList) == 0:
         print('jar List length of: ',len(jarList))
         newDatas = getJar(datas,jarList)
