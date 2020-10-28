@@ -6,8 +6,3 @@ dict를 datas.json을 처음 로드해서, 일단 로드한뒤엔 jarscan으로 
 localhost:12800/jarscan
 돌리고나면 dict가 보유중인상태.ㅇㅋ. 270개 90초걸림.
 참고로 280개에 10메가먹고있다.ㅋㅋㅋㅋㅋ..
-
-http://localhost:12800/headexport
-http://localhost:12800/backupdatas
-둘다 매우 잘 됨.ㅇㅋ.
-ajax외엔 더 손댈건 우선은 없겠다.
