@@ -109,8 +109,8 @@ def headExport():
 @app.route('/backupdatas')
 def backup():
     global datas
-    no = backupDatas(datas)
-    return 'datas backup no: '+no
+    nostr = backupDatas(datas)
+    return str(len(datas))+'datas backup no: '+nostr
 
 def backupDatas(datas):
     flist = os.listdir()
@@ -122,7 +122,7 @@ def backupDatas(datas):
     datasdictPath = './b{}_datas.json'.format(no)
     print('datas len: ',len(datas))
     minidb.txt2dict.saveJson(datas,datasdictPath)
-    return no
+    return str(no)
 
 
 #toolong @app.route('/fetch/bodytext/<path:no>')

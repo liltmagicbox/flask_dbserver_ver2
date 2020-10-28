@@ -1,3 +1,12 @@
+'''
+basic work flow:
+jarList = os.listdir(jar)
+newDatas = getJar(oldDatas,jarList)
+resizeImg(newDatas)
+datas = appendDict(datas , newDatas)
+txt2dict.saveJson(datas,'datas.json')
+'''
+
 jar = 'dumpjar'
 
 statics = 'static'
@@ -25,7 +34,8 @@ import txt2dict
 import os
 import shutil
 #get before happens.
-
+import sys
+import datetime
 import random
 def barrand6():
     return '_'+str( random.randint(1,1000000))
@@ -45,22 +55,22 @@ def barrand6():
 
 def makedirs():
     try:
-        os.mkdir( os.getcwd()+'/'+statics )
+        os.mkdir( './'+statics )
         print('statics done')
     except:
         pass
     try:
-        os.mkdir( os.getcwd()+'/'+origins )
+        os.mkdir('./'+origins )
         print('origin done')
     except:
         pass
     try:
-        os.mkdir( os.getcwd()+'/'+resizeds )
+        os.mkdir( './'+resizeds )
         print('resizeds done')
     except:
         pass
     try:
-        os.mkdir( os.getcwd()+'/'+thumbs )
+        os.mkdir('./'+thumbs )
         print('thumbs done')
     except:
         pass
@@ -81,45 +91,54 @@ makedirs()
 'notice it can move origin to origin. good for test!!'
 #load jar, read txt, if not in dict:add , copy origins,move pastebin.
 def getJar(oldDatas,jarList):
-
     """
     returns new dict, not in old dict.
     if already was, delete that no folder.
     """
+    #clear pastebin here. confirmed.
+    if pastebin in os.listdir():
+        tempdir = barrand6()
+        os.rename(pastebin,tempdir)#clever..fine..
+        shutil.rmtree(tempdir)#acces deniyed     ..fixed!
+        os.mkdir(pastebin)
+
+
     oldDatakeys = oldDatas.keys()
     newDatas = {} #for data insure.
 
     for noFolder in jarList:
         try:
             #txtFiledir = os.path.join( origins,noFolder,noFolder+'.txt')
-            thisfolder = noFolder
+            txtFilename = noFolder+'.txt'
+            #------------------------user pre-sure.
             txtfiles = []
             for f in os.listdir( os.path.join( jar,noFolder) ):
                 if '.txt' in f:
                     txtfiles.append(f)
             if len(txtfiles) == 1:
-                txtFilename = '설정.txt'
+                txtFilename = txtfiles[0]
             else:
                 if not '설정.txt' in txtfiles:
-                    raise Exception('ERROR!! of : ' + str(thistime))
+                    raise Exception('ERROR no txt : ' + str(noFolder))
                 txtFilename = '설정.txt'
+            #------------------------user pre-sure
 
-            txtFile = os.path.join( jar,noFolder,txtFilename+'.txt') #whatif dir = no.txt?
+            txtFile = os.path.join( jar,noFolder,txtFilename) #whatif dir = no.txt?
             parsedDict = txt2dict.parseTxt(txtFile,parseKeys,multiLineKey)#hope it's atleast complete...
+
             #----------------------for custom dict additional option
             checklist = ['번호','제목','작성자','날짜','본문']
-            if not '번호' in parsedDict.keys():
-                raise Exception('ERROR!! of : ' + str(thistime))
-            if type(int(parsedDict['번호']))!=type(1):
-                raise Exception('ERROR!! of : ' + str(thistime))
-            if not '제목' in parsedDict.keys():
-                raise Exception('ERROR!! of : ' + str(thistime))
-            if not '작성자' in parsedDict.keys():
-                raise Exception('ERROR!! of : ' + str(thistime))
-            if not '날짜' in parsedDict.keys():
-                raise Exception('ERROR!! of : ' + str(thistime))
-            if not '본문' in parsedDict.keys():
-                raise Exception('ERROR!! of : ' + str(thistime))
+            for c in checklist:
+                if not c in parsedDict.keys():
+                    raise Exception('ERROR!! not format txt : ' + str(noFolder))
+
+            #user input, do another func.
+            #'16'.isdigit()
+            #if int(parsedDict['번호'])<1:
+                #raise Exception('ERROR!! of : ' + str(noFolder))
+            #a = parsedDict['날짜'].split('.')
+            #b = str(datetime.date.today()).split('-')
+            #if datetime.date(a[0],a[1],a[2]) < datetime.date.today()
 
             if '태그' in parsedDict.keys():
                 tagList = parsedDict['태그'].split(',')
@@ -136,28 +155,16 @@ def getJar(oldDatas,jarList):
             #----------------------for custom dict additional option
 
 
+            #----------------------------- after get parsedDict.
             tmpKey = parsedDict[idKey]       #9133114
             if tmpKey in oldDatakeys:
-                raise Exception('ERROR!! of : ' + str(thistime))
-                #os.rename(noFolderpath, pastebin+'/'+noFolder+barrand6() )
+                raise Exception('skip.. id already in parsedict ..: ' + str(noFolder))
 
+            idFoldername = parsedDict['번호']
             noFolderpath = os.path.join( jar,noFolder )
-            originPath = os.path.join( origins , noFolder )
+            originPath = os.path.join( origins , idFoldername )
             shutil.copytree(noFolderpath,originPath, dirs_exist_ok = False)# was true, but to integrity....
-            #shutil.move(noFolderpath,pastebin)
-
-
-            #newDatas[tmpKey] = parsedDict
-            # #if os.listdir( os.path.join( jar,noFolder) )
-            # try:
-            #     #movefolders.copyAinB( noFolderdir, origins)#inside to inside of.
-            #     shutil.copytree(noFolderpath,originPath, dirs_exist_ok = True)
-            #     #print(str(tmpKey),'copy success, files to origins')
-            #
-            # except:
-            #     del newDatas[tmpKey]
-            #     print('BUGBUG.. delete this no. dict.')
-            # #movefolders.moveAinB( noFolderdir, pastebin ) # A moved in B
+            #it occured at test. nodict, but files.
             #shutil.move(noFolderpath,pastebin)
 
 
@@ -166,22 +173,34 @@ def getJar(oldDatas,jarList):
             #datas[tmpKey]['key'] = 'value'
 
             # get moved nofolder, add datas originImgs.
-            originFiles = os.listdir(os.path.join( origins,noFolder))
+            originFiles = os.listdir(os.path.join( origins, idFoldername))
             originImgs = []
             for img in originFiles:
                 ext = os.path.splitext( img )[1][1:]     # .jpg == jpg
                 if ext in imgExt:     #now, it's img.
                     originImgs.append(img)
+            if originImgs==[]:
+                raise Exception('ERROR!! no img..: ' + str(noFolder))
             parsedDict[originKey] = originImgs
 
-
-            #print(originImgs)
             newDatas[tmpKey] = parsedDict
             #datas[tmpKey][allfilesKey] = originFiles
-        except:
-            os.rename(noFolderpath, pastebin+'/'+noFolder+barrand6() )
-            print('err occured. gone pastegin. next!')
+            thisrand=barrand6()
+            os.rename( os.path.join( jar,noFolder), pastebin+'/'+noFolder+thisrand )
+
+        except Exception as e:
+            exc_info = sys.exc_info()#below except.
+            errmsg = exc_info[1],':at line',exc_info[2].tb_lineno
+            print(errmsg)
+
+            thisrand=barrand6()
+            os.rename( os.path.join( jar,noFolder), pastebin+'/'+noFolder+thisrand )
+            f = open('./'+pastebin+'/'+noFolder+thisrand+'/err.txt','w',encoding='utf-8')
+            f.write(str(errmsg))
+            f.close()
+            print( 'ERROR occured. gone pastebin :',str(noFolder)+thisrand)
             continue
+
     return newDatas
 
 
@@ -192,12 +211,11 @@ def appendDict(oldDict,newDict):
         if i not in oldDict:
             pass
         else:
-            print('BUGBUG...dict already!')
-            return {}
+            print('BUGBUG...dict appending.... already!')
+            return oldDict
 
     for i in newDict:
         oldDict[i] = newDict[i]
-    print('good, dict appended')
     return oldDict
 
 
@@ -212,38 +230,21 @@ def jarScan(datas):
     for i in os.listdir(jar):
         if os.path.isdir(  jar+'/'+i ):
             jarList.append(i)
-        #if os.path.isdir(i):
-        #jarList.remove(i)
-    print(jarList)
+    #print(jarList)
+    #we got dir lists. fine.
 
     if len(jarList) != 0:
-        print('jar List length of: ',len(jarList))
         newDatas = getJar(datas,jarList)
-        print('new datas length of: ',len(newDatas))
-        resizedlen = resizeImg(newDatas)
-        print('imgs resized: ', str(resizedlen) )
-
-        if len(newDatas)>0:
-            olddataslen = len(datas)
-            datas = appendDict(datas , newDatas)#if already, not add.
-            print('new Dict appended: ',len(newDatas),'finally :',len(datas) )
-            if len(datas) > olddataslen:
-                txt2dict.saveJson(datas,jsonName)
-                #print('json saved:'+str(jsonName),'length of: ',len(datas))
-            else:
-                print('lengthERROR::', 'old: ', olddataslen , 'new: ',len(datas) )
-
-    else:
-        print('BUG__ jar was, but os.list empty..')
-    #print('datas len after jarscan: ', len(datas) )
+        print('jar List:',len(jarList),'== new datas:', len(newDatas))
+        if len(newDatas)>0: #means some may be not in ,anyway done.
+            newDatas_resized = resizeImg(newDatas)#and adds to newDatas.
+            datas = appendDict(datas , newDatas_resized)#returns atleast datas, not {}.
+            print('datas len:',len(datas) )
+            txt2dict.saveJson(datas,jsonName)
     return datas #for at least..?
 
 
-##jarList = os.listdir(jar)
-##newDatas = getJar(oldDatas)
-##resizeImg(newDatas)
-##datas = appendDict(datas , newDatas)
-##txt2dict.saveJson(datas,'datas.json')
+
 
 
 import json
@@ -275,7 +276,6 @@ datas = minidb.jarScan(datas)  # in datas, get datas :added. saving json.
 #maybe can go out..
     #phase3, convert img. we got imglist, dir, ..to path.
 from PIL import Image
-import random
 resizedKey = '리사이즈'
 
 
@@ -285,31 +285,20 @@ def resizeImg(newDatas):
 
     newKeys = newDatas.keys()
     for no in newKeys:
-
-
-        resizedList = []
-        try:
-            os.mkdir( os.path.join(resizeds, no))
-        except:
-            print('no,,, resizeds dir already!! ')
-
-        thumbList = []
-        try:
-            os.mkdir( os.path.join(thumbs, no))
-        except:
-            print('no,,, thumb dir already!! ')
-
         imgList = newDatas[no][originKey]#origin img list.
-        samenameList=[]
-        for i in imgList:
+        resizedList = []
+        thumbList = []
+        os.mkdir( os.path.join(resizeds, no))
+        os.mkdir( os.path.join(thumbs, no))
 
+        onlynameList=[]
+        for i in imgList:
             iname,iexp = os.path.splitext( i )
-            if iname in samenameList:
-                iname = iname+str( random.randint(1,1000000) )
+            if iname in onlynameList:
+                iname = iname+barrand6()
             else:
-                samenameList.append(iname)
+                onlynameList.append(iname)
             #print(iexp,iname)
-            imgnumbers+=1
 
             isrc = os.path.join(origins, no, i)
             idest = os.path.join(resizeds, no, iname )
@@ -361,11 +350,10 @@ def resizeImg(newDatas):
                     nim.crop( ((imw/2 -imh/2), 0, (imw/2 +imh/2), imh) ).convert('RGB').save( thumbDest+'.jpg' ,quality=80)
                 #add for jpg not GIF
                 thumbList.append( iname+'.jpg' )
-
+            imgnumbers+=1
         newDatas[no][resizedKey] = resizedList
-
-    return str(imgnumbers) #do we need it? now, err if err.
-
+    print( "converted imgs:",str(imgnumbers) )
+    return newDatas
 
 #so we got datas, fine dataset. as dict.
 

@@ -4,7 +4,7 @@
     file = .txt, utf8.
     parseKeys = list of factor names. ex:'item_value'
     multiLine = a factor that contains multi line. the only one.
-    
+
 """
 def parseTxt(txtFile, parseKeys, multiLine ):
     """
@@ -12,7 +12,6 @@ def parseTxt(txtFile, parseKeys, multiLine ):
     parseKeys = list of factor names. ex:'item_value'
     multiLine = a factor that contains multi line. the only one.
     """
-
     f = open(txtFile,'r',encoding='utf-8')
     readList = f.readlines()
     f.close()
@@ -20,8 +19,8 @@ def parseTxt(txtFile, parseKeys, multiLine ):
     parseDict = {}
 
     for i in readList:
-        
-        
+
+
         key = i[:i.find('=')].strip()
         value = i[i.find('=')+1:].strip()
         #print(key)
@@ -33,7 +32,7 @@ def parseTxt(txtFile, parseKeys, multiLine ):
                     if i == '\n':
                         continue
                 parseDict[multiLine] += i # assume not-in-list are multiline body.
-        
+
     return parseDict
 
 
@@ -50,14 +49,14 @@ def saveJson(parsedDict,jsonFile):
     f=open(jsonFile,'w',encoding='utf-8')
     f.write(dump)
     f.close()
-    
+
 def saveVarjson(parsedDict,jsonFile,varName='datas'):
     dump = json.dumps(parsedDict,ensure_ascii=False,indent = 4)
     f=open(jsonFile,'w',encoding='utf-8')
     f.write('var '+varName+' = ')
     f.write(dump)
     f.close()
-    
+
 if __name__ == '__main__':
     file= '크롤링결과버전0.7.txt'
     parseKeys = ['번호','제목','작성자','날짜','태그','본문']
@@ -65,5 +64,3 @@ if __name__ == '__main__':
     result = parseTxt(file,parseKeys,multiLine)
     #checkDict(result)
     print('result',result)
-
-
