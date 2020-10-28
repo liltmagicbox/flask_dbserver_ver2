@@ -69,12 +69,14 @@ def makedirs():
         print('jar done')
     except:
         pass
-    print('all dirs allready.')
+    print('minidb loading..all dirs already')
+
+makedirs()
 
 'notice it can move origin to origin. good for test!!'
 #load jar, read txt, if not in dict:add , copy origins,move pastebin.
 def getJar(oldDatas,jarList):
-    makedirs()
+
     """
     returns new dict, not in old dict.
     if already was, delete that no folder.
@@ -139,7 +141,7 @@ def getJar(oldDatas,jarList):
             newDatas[tmpKey][originKey] = originImgs
             #datas[tmpKey][allfilesKey] = originFiles
         else:
-            #print('key already dicted..')
+            print('key already dicted..', str(tmpKey) )
             shutil.move(noFolderpath,pastebin)
 
     return newDatas
@@ -165,29 +167,34 @@ def appendDict(oldDict,newDict):
 ##oldDatas = datas
 'note that it loads dict, usually already was datas.json.. and adds.fine.'
 def jarScan(datas):
-    makedirs()
-    jsonName = 'datas.json'
-    jarList = os.listdir(jar)
-    for i in jarList:
-        if i.find('.txt') != -1:
-            shutil.move( os.path.join(jar, i) ,pastebin)
-            print('txtfile!!!moved to trashbin.')
-            jarList = os.listdir(jar)
 
-    if not len(jarList) == 0:
+    jsonName = 'datas.json'
+    #jarList = os.listdir(jar)#only get dir. fine.
+    jarList=[]
+    for i in os.listdir():
+        if os.path.isdir(i):
+            jarList.append(i)
+
+    if len(jarList) != 0:
         print('jar List length of: ',len(jarList))
         newDatas = getJar(datas,jarList)
-        print('jar List appended: ',len(newDatas))
+        print('new datas length of: ',len(newDatas))
         resizedlen = resizeImg(newDatas)
         print('imgs resized: ', str(resizedlen) )
 
         if len(newDatas)>0:
-            datas = appendDict(datas , newDatas)
+            olddataslen = len(datas)
+            datas = appendDict(datas , newDatas)#if already, not add.
             print('new Dict appended: ',len(newDatas),'finally :',len(datas) )
-            txt2dict.saveJson(datas,jsonName)
-            print('json saved:'+str(jsonName),'length of: ',len(datas))
+            if len(datas) > olddataslen:
+                txt2dict.saveJson(datas,jsonName)
+                print('json saved:'+str(jsonName),'length of: ',len(datas))
+            else:
+                print('lengthERROR::', 'old: ', olddataslen , 'new: ',len(datas) )
+
     else:
-        print('error jarScan')
+        print('BUG__ jar was, but os.list empty..')
+    print('datas len after jarscan: ', len(datas) )
     return datas #for at least..?
 
 
@@ -227,7 +234,7 @@ datas = minidb.jarScan(datas)  # in datas, get datas :added. saving json.
 #maybe can go out..
     #phase3, convert img. we got imglist, dir, ..to path.
 from PIL import Image
-
+import random
 resizedKey = '리사이즈'
 
 
@@ -243,18 +250,23 @@ def resizeImg(newDatas):
         try:
             os.mkdir( os.path.join(resizeds, no))
         except:
-            print('no resizeds dir already!! ')
+            print('no,,, resizeds dir already!! ')
 
         thumbList = []
         try:
             os.mkdir( os.path.join(thumbs, no))
         except:
-            print('no thumb dir already!! ')
+            print('no,,, thumb dir already!! ')
 
         imgList = newDatas[no][originKey]#origin img list.
+        samenameList=[]
         for i in imgList:
 
             iname,iexp = os.path.splitext( i )
+            if iname in samenameList:
+                iname = iname+str( random.randint(1,1000000) )
+            else:
+                samenameList.append(iname)
             #print(iexp,iname)
             imgnumbers+=1
 
@@ -281,8 +293,9 @@ def resizeImg(newDatas):
                     imh = 300
                     imw = int( (im.size[0]/im.size[1]*imh))
                     nim = im.resize((imw,imh),Image.LANCZOS)
-                    imw = imh
-                    nim.crop( (0,0,imw,imh) ).convert('RGB').save( thumbDest+'.jpg' ,quality=80)
+                    #imw = imh
+
+                    nim.crop( ((imw/2 -imh/2), 0, (imw/2 +imh/2), imh) ).convert('RGB').save( thumbDest+'.jpg' ,quality=80)
 
 
                 thumbList.append( iname+'.jpg' )
@@ -291,8 +304,22 @@ def resizeImg(newDatas):
                 resizedList.append( iname+'.gif' )
 
                 #tumb
-                im.save( thumbDest+'.gif')
-                thumbList.append( iname+'.gif' )
+                #im.save( thumbDest+'.gif')
+                #thumbList.append( iname+'.gif' )
+                #add for jpg not GIF
+                imw = 300
+                imh = int(im.size[1]/(im.size[0]/imw))
+                if imh >=imw:
+                    nim = im.resize((imw,imh),Image.LANCZOS)
+                    imh = imw
+                    nim.crop( (0,0,imw,imh) ).convert('RGB').save( thumbDest+'.jpg' ,quality=80)
+                elif imh <imw:
+                    imh = 300
+                    imw = int( (im.size[0]/im.size[1]*imh))
+                    nim = im.resize((imw,imh),Image.LANCZOS)
+                    nim.crop( ((imw/2 -imh/2), 0, (imw/2 +imh/2), imh) ).convert('RGB').save( thumbDest+'.jpg' ,quality=80)
+                #add for jpg not GIF
+                thumbList.append( iname+'.jpg' )
 
         newDatas[no][resizedKey] = resizedList
 

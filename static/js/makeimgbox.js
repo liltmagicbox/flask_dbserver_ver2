@@ -194,6 +194,7 @@ function eventBodyload(event){
   //bodyText.width = imgArea.clientWidth
   //box.appendChild(bodyText) why you here?!
 
+  //make query string. flask gets and returns no,key mini datas.
   let params = { 'no': no, 'key':'본문',}
   var esc = encodeURIComponent;
   let query = Object.keys(params)
@@ -215,7 +216,7 @@ function eventBodyload(event){
 
 
 
-
+    // i tried parse http url myself, but failed.. when state: link text link .
     /*
     string = myJson['bodytext']
     console.log(string,'string')
@@ -249,7 +250,7 @@ function eventBodyload(event){
 
 
 
-
+    //url parse and get link. notice that full url text will  go thorugh img box..
     let urls = rawText.match(/\bhttps?:\/\/\S+/gi)
     //console.log(urls.length)
     for( var u of urls){

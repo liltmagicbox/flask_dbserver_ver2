@@ -4,3 +4,6 @@
 *.txt
 *.png
 *.jpeg
+datas.json
+static/headdict.json
+*.gif

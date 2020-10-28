@@ -88,13 +88,14 @@ def getJson():
     global datas
     jsonName = 'datas.json'
     datas = minidb.loadJson( jsonName )
-    return( str(len(datas)))
+    return 'getjson'+str(len(datas))
 
 @app.route('/jarscan')
 def jarScan():
     global datas
+    no = backupDatas(datas)
     datas = minidb.jarScan(datas)
-    return( str(len(datas)))
+    return "backup no:"+str(no)+'jarscan after:'+str(len(datas))
 
 @app.route('/headexport')
 def headExport():
@@ -103,22 +104,25 @@ def headExport():
     headDict = getHeaddict(datas)
     print('headDict: ',len(headDict))
     minidb.txt2dict.saveVarjson(headDict,headdictPath,'datas')
-    return 'headgone'
+    return 'headexport'
 
 @app.route('/backupdatas')
-def backupDatas():
+def backup():
     global datas
+    no = backupDatas(datas)
+    return 'datas backup no: '+no
+
+def backupDatas(datas):
     flist = os.listdir()
     no=0
     while 'b{}_datas.json'.format(no) in flist:
         no+=1
-    print(no)
+    print('backup no:',no)
     #datasdictPath = './b_datas.json'
     datasdictPath = './b{}_datas.json'.format(no)
-    print('datas: ',len(datas))
+    print('datas len: ',len(datas))
     minidb.txt2dict.saveJson(datas,datasdictPath)
-    return 'datas saved'
-
+    return no
 
 
 #toolong @app.route('/fetch/bodytext/<path:no>')
