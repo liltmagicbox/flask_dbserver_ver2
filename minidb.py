@@ -26,6 +26,11 @@ import os
 import shutil
 #get before happens.
 
+import random
+def barrand6():
+    return '_'+str( random.randint(1,1000000))
+#os.rename(noFolderpath, pastebin+'/'+noFolder+barrand6() )
+
 
 # a = 'dumpjar'
 # b = 'static/origin'
@@ -85,45 +90,75 @@ def getJar(oldDatas,jarList):
     newDatas = {} #for data insure.
 
     for noFolder in jarList:
-        #txtFiledir = os.path.join( origins,noFolder,noFolder+'.txt')
-        txtFile = os.path.join( jar,noFolder,noFolder+'.txt')
-        parsedDict = txt2dict.parseTxt(txtFile,parseKeys,multiLineKey)
-        if '태그' in parsedDict.keys():
-            tagList = parsedDict['태그'].split(',')
-            parsedDict['유저태그'] = tagList
-            del parsedDict['태그']
-        else:
-            parsedDict['유저태그'] = []
+        try:
+            #txtFiledir = os.path.join( origins,noFolder,noFolder+'.txt')
+            thisfolder = noFolder
+            txtfiles = []
+            for f in os.listdir( os.path.join( jar,noFolder) ):
+                if '.txt' in f:
+                    txtfiles.append(f)
+            if len(txtfiles) == 1:
+                txtFilename = '설정.txt'
+            else:
+                if not '설정.txt' in txtfiles:
+                    raise Exception('ERROR!! of : ' + str(thistime))
+                txtFilename = '설정.txt'
 
+            txtFile = os.path.join( jar,noFolder,txtFilename+'.txt') #whatif dir = no.txt?
+            parsedDict = txt2dict.parseTxt(txtFile,parseKeys,multiLineKey)#hope it's atleast complete...
+            #----------------------for custom dict additional option
+            checklist = ['번호','제목','작성자','날짜','본문']
+            if not '번호' in parsedDict.keys():
+                raise Exception('ERROR!! of : ' + str(thistime))
+            if type(int(parsedDict['번호']))!=type(1):
+                raise Exception('ERROR!! of : ' + str(thistime))
+            if not '제목' in parsedDict.keys():
+                raise Exception('ERROR!! of : ' + str(thistime))
+            if not '작성자' in parsedDict.keys():
+                raise Exception('ERROR!! of : ' + str(thistime))
+            if not '날짜' in parsedDict.keys():
+                raise Exception('ERROR!! of : ' + str(thistime))
+            if not '본문' in parsedDict.keys():
+                raise Exception('ERROR!! of : ' + str(thistime))
 
-        if '제목' in parsedDict.keys():
+            if '태그' in parsedDict.keys():
+                tagList = parsedDict['태그'].split(',')
+                parsedDict['유저태그'] = tagList
+                del parsedDict['태그']
+            else:
+                parsedDict['유저태그'] = []
+
             if parsedDict['제목'].startswith('[번역]'):
                 parsedDict['제목'] = parsedDict['제목'].split('[번역]')[1].strip()
                 if parsedDict['제목'].find('센세)') != -1 :
                     parsedDict['유저태그'].append( parsedDict['제목'].split('센세)')[0].strip()+'센세' )
                     #parsedDict['태그'].append( a.split('[번역]')[1].strip().split('센세)')[0]+'센세)' )
+            #----------------------for custom dict additional option
 
 
+            tmpKey = parsedDict[idKey]       #9133114
+            if tmpKey in oldDatakeys:
+                raise Exception('ERROR!! of : ' + str(thistime))
+                #os.rename(noFolderpath, pastebin+'/'+noFolder+barrand6() )
+
+            noFolderpath = os.path.join( jar,noFolder )
+            originPath = os.path.join( origins , noFolder )
+            shutil.copytree(noFolderpath,originPath, dirs_exist_ok = False)# was true, but to integrity....
+            #shutil.move(noFolderpath,pastebin)
 
 
-        tmpKey = parsedDict[idKey]       #9133114
-
-        noFolderpath = os.path.join( jar,noFolder )
-        originPath = os.path.join( origins , noFolder )
-        if tmpKey not in oldDatakeys:   #means new one.
-            newDatas[tmpKey] = parsedDict
-
-            #if os.listdir( os.path.join( jar,noFolder) )
-            try:
-                #movefolders.copyAinB( noFolderdir, origins)#inside to inside of.
-                shutil.copytree(noFolderpath,originPath, dirs_exist_ok = True)
-                #print(str(tmpKey),'copy success, files to origins')
-
-            except:
-                del newDatas[tmpKey]
-                #print('error.. delete this no. dict.')
-            #movefolders.moveAinB( noFolderdir, pastebin ) # A moved in B
-            shutil.move(noFolderpath,pastebin)
+            #newDatas[tmpKey] = parsedDict
+            # #if os.listdir( os.path.join( jar,noFolder) )
+            # try:
+            #     #movefolders.copyAinB( noFolderdir, origins)#inside to inside of.
+            #     shutil.copytree(noFolderpath,originPath, dirs_exist_ok = True)
+            #     #print(str(tmpKey),'copy success, files to origins')
+            #
+            # except:
+            #     del newDatas[tmpKey]
+            #     print('BUGBUG.. delete this no. dict.')
+            # #movefolders.moveAinB( noFolderdir, pastebin ) # A moved in B
+            #shutil.move(noFolderpath,pastebin)
 
 
             #datas is dict object, appended new key,value.
@@ -137,13 +172,16 @@ def getJar(oldDatas,jarList):
                 ext = os.path.splitext( img )[1][1:]     # .jpg == jpg
                 if ext in imgExt:     #now, it's img.
                     originImgs.append(img)
-            #print(originImgs)
-            newDatas[tmpKey][originKey] = originImgs
-            #datas[tmpKey][allfilesKey] = originFiles
-        else:
-            print('key already dicted..', str(tmpKey) )
-            shutil.move(noFolderpath,pastebin)
+            parsedDict[originKey] = originImgs
 
+
+            #print(originImgs)
+            newDatas[tmpKey] = parsedDict
+            #datas[tmpKey][allfilesKey] = originFiles
+        except:
+            os.rename(noFolderpath, pastebin+'/'+noFolder+barrand6() )
+            print('err occured. gone pastegin. next!')
+            continue
     return newDatas
 
 
@@ -154,7 +192,7 @@ def appendDict(oldDict,newDict):
         if i not in oldDict:
             pass
         else:
-            print('bad dict!')
+            print('BUGBUG...dict already!')
             return {}
 
     for i in newDict:
@@ -171,9 +209,12 @@ def jarScan(datas):
     jsonName = 'datas.json'
     #jarList = os.listdir(jar)#only get dir. fine.
     jarList=[]
-    for i in os.listdir():
-        if os.path.isdir(i):
+    for i in os.listdir(jar):
+        if os.path.isdir(  jar+'/'+i ):
             jarList.append(i)
+        #if os.path.isdir(i):
+        #jarList.remove(i)
+    print(jarList)
 
     if len(jarList) != 0:
         print('jar List length of: ',len(jarList))
@@ -188,13 +229,13 @@ def jarScan(datas):
             print('new Dict appended: ',len(newDatas),'finally :',len(datas) )
             if len(datas) > olddataslen:
                 txt2dict.saveJson(datas,jsonName)
-                print('json saved:'+str(jsonName),'length of: ',len(datas))
+                #print('json saved:'+str(jsonName),'length of: ',len(datas))
             else:
                 print('lengthERROR::', 'old: ', olddataslen , 'new: ',len(datas) )
 
     else:
         print('BUG__ jar was, but os.list empty..')
-    print('datas len after jarscan: ', len(datas) )
+    #print('datas len after jarscan: ', len(datas) )
     return datas #for at least..?
 
 
