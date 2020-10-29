@@ -43,12 +43,7 @@ def checkDict(parseDict):
         e+=1
 
 
-import json
-def saveJson(parsedDict,jsonFile):
-    dump = json.dumps(parsedDict,ensure_ascii=False,indent = 4)
-    f=open(jsonFile,'w',encoding='utf-8')
-    f.write(dump)
-    f.close()
+from jsonio import *#includs json as well
 
 def saveVarjson(parsedDict,jsonFile,varName='datas'):
     dump = json.dumps(parsedDict,ensure_ascii=False,indent = 4)
