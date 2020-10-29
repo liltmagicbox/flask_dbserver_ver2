@@ -1,5 +1,15 @@
 import os
 import minidb
+# minidb.loadJson( jsonFile = 'datas.json')
+#minidb.saveJson(parsedDict,jsonFile)
+# minidb.saveVarjson(parsedDict,jsonFile,varName='datas')
+import fluiddb
+#fluidset(no)
+#fluid[no]['유저태그']=[]
+#addn(user,no,key)
+# addtagu(user,no,text)
+# addtag(user,no,text)
+# addcomm(user,no,text,time)
 
 from flask import send_from_directory, send_file
 from flask import Flask, render_template, request, jsonify
@@ -75,13 +85,8 @@ def hello_json():
     return jsonify(data)
 
 
-
-
-
-
-
-
-
+fluid = {}
+logue = []
 datas = {}
 @app.route('/getjson')
 def getJson():
@@ -109,10 +114,12 @@ def headExport():
 @app.route('/backupdatas')
 def backup():
     global datas
+    print(datas)
     nostr = backupDatas(datas)
     return str(len(datas))+'datas backup no: '+nostr
-
-def backupDatas(datas):
+datas = {}
+def backupDatas(datas=datas):
+    print(datas)
     flist = os.listdir()
     no=0
     while 'b{}_datas.json'.format(no) in flist:
@@ -139,6 +146,38 @@ def fetchParse():
     #data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}# it! works!
     data = { 'bodytext':valueText }
     return jsonify(data)
+
+@app.route('/heavyfetch')
+def heavyfetchParse():
+    global datas
+    global fluid
+    #no = request.args.get('no')
+    key = request.args.get('key')
+    #request.query_string
+    tmplist=[]
+    tmplist2=[]
+    tmpdict={}
+    for n in fluid:
+        tmpdict[n] = fluid[n][key]
+
+    valueText = datas[no][key]
+    print(no,key)
+    print(valueText)
+    #return( valueText )
+    #data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}# it! works!
+    data = { 'bodytext':valueText }
+    return jsonify(data)
+
+@app.route('/bodyload')
+def bodyload():
+    global datas
+    global fluid
+    key = request.args.get('key')
+    tmpdict[n] = fluid[n][key]
+    data = { 'bodytext':valueText }
+    return jsonify(data)
+
+
 
 
 if __name__ == "__main__":
