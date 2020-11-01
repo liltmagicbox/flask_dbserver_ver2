@@ -10,7 +10,7 @@ function initTagframe(){
   let ch_className = 'tagB_character'
   let ch_Taglist = ['마키', '린', '하나요', '호노카', '코토리', '우미', '니코', '에리', '노조미']
   for( var tagtext of ch_Taglist){
-    fillTagframe(tagtext,ch_tagBox,ch_className,state=2)
+    fillTagframe(tagtext,ch_tagBox,ch_className,state=1)
   }
 
   /*

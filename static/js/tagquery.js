@@ -51,10 +51,13 @@ function tagQueryInter(datas,noList,queryList ){
   let tagList = noList
   let tmpList = []
   //includes: list, elemnt, str, ' '.
+
   for ( var query of queryList){
-    for ( var key of tagList) {
-      if( datas[key]['태그'].includes(query) ){
-        if( !tmpList.includes(key) ){ tmpList.push( key )
+    for ( key of tagList) {
+      if( fluid[key] !=undefined){
+        if( datas[key]['캐릭터태그'].includes(query) ){
+          if( !tmpList.includes(key) ){ tmpList.push( key )
+          }
         }
       }
     }

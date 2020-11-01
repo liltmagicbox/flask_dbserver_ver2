@@ -6,7 +6,8 @@ function fillNewlist(noList){
   let colNum = getColnum()
   let outFrame = getImgframe()
   setupCol(outFrame,colNum)
-  fillImgcol(noList,outFrame,1)
+  pagenum=1
+  fillImgcol(noList,outFrame,pagenum)
 }
 
 function setupCol(outFrame,col){
@@ -41,8 +42,17 @@ function fillImgcol(noList,outFrame,page){
     if( step >= overLoad ){break}
     makeImgbox(datas,noList[step],colList[step%colNum] ,boxColor = boxColor ,miniLoad=miniLoad)
     //console.log(step%4)
+
   }
 }
+
+// function makemoreload(outFrame){
+//   let butt = document.createElement('button')
+//   butt.className = 'moreloadbutton'
+//   butt.id = "moreloadbutton"
+//   butt.innerText = "계속 로드"
+//   outFrame.appendChild(butt)
+// }
 
 //page from 1
 function fillImgframe(noList,outFrame,page){
@@ -133,7 +143,100 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
 }
 
 function overLayview(){
-  no =event
+  preimg =event.currentTarget
+  document.body.classList.add("stop_scroll")
+
+  overviewer = document.createElement('div')
+  overviewer.className = 'overviewer'
+  overviewer.id = "overviewer"
+  overviewer.width = window.innerWidth
+  overviewer.height = window.innerHeight
+  overviewer.addEventListener('click',overoff )
+  //document.body.append
+  document.body.appendChild(overviewer)
+  //box.appendChild(overviewer)
+  //im.addEventListener('click', overLayview)
+  //imgArea.appendChild(im)
+  innerviewer = document.createElement('div')
+  innerviewer.className = 'innerviewer'
+  innerviewer.id = "innerviewer"
+  //innerviewer.width = window.innerWidth/2
+  //innerviewer.height = window.innerHeight
+  overviewer.appendChild(innerviewer)
+
+  //innerviewer.innerHTML = preimg.parentElement.parentElement.innerHTML
+  //makeImgbox(datas,noList[step],outFrame)
+
+
+  box = innerviewer
+  let no= preimg.parentElement.id.split('_')[1]
+
+  let titleText = datas[no]['제목']
+  let dateText = datas[no]['날짜']
+
+  let title = document.createElement('h2')
+  title.className = "imgTitle"
+  title.innerText = titleText
+  box.appendChild(title)
+
+  let date = document.createElement('p')
+  date.innerText = dateText
+  date.className = "imgDate"
+  box.appendChild(date)
+
+  let imlist = datas[no]['리사이즈']
+  let resizePath = './static/resized/'+no+'/'
+  //let partList = imlist.slice(1)
+  for( var filename of imlist){
+    let im = document.createElement('img')
+    im.src = resizePath+filename
+    innerviewer.appendChild(im)
+  }
+  let bodyText = document.createElement('p')
+
+  let params = { 'no': no, 'key':'본문',}
+  var esc = encodeURIComponent;
+  let query = Object.keys(params)
+    .map(k => esc(k) + '=' + esc(params[k]))
+    .join('&');
+
+  let url = window.location.href.replace( window.location.pathname , '')
+  let fetchurl = url+'/fetch?'+query
+
+  fetch(fetchurl)
+  .then( function(response){return response.json()})
+  .then(function(myJson){
+    let rawText = myJson['bodytext']
+    let urls = rawText.match(/\bhttps?:\/\/\S+/gi)
+    //console.log(urls.length)
+    if(urls!=null){
+      for( var u of urls){
+        //linkalt = u.slice(u.indexOf('//')+2,25)+'...'
+        let linkalt = '링크'
+        bodyText.innerHTML += linkalt.link(u)+'\n'
+      }
+      let rawText2 = rawText
+    for( var u of urls){
+      //bodyText.innerHTML += rawText.slice(rawText.lastIndexOf(urls[urls.length-1])+urls[urls.length-1].length+1)
+      let remain = ''
+      for( var i of rawText2.split(u) ){remain+=i}
+      rawText2 = remain
+
+      //console.log(rawText2,'r2')
+    }
+    bodyText.innerHTML+=rawText2
+    }
+    else{
+      bodyText.innerHTML+=rawText
+    }
+    innerviewer.appendChild(bodyText)
+  })
+
+}
+
+function overoff(){
+  document.body.classList.remove("stop_scroll")
+  document.getElementById('overviewer').remove()
 }
 
 
@@ -155,7 +258,8 @@ function eventBodyload(event){
 
   let button = event.currentTarget//for delete self
   let no = event.currentTarget.no
-  let box = document.getElementById("imgBox_"+no)
+  //let box = document.getElementById("imgBox_"+no)
+  let box = event.currentTarget.parentElement
   //let imArea = document.getElementById("imgArea_"+no)
   //let imArea = box.firstElementChild
 
@@ -252,12 +356,15 @@ function eventBodyload(event){
 
     //url parse and get link. notice that full url text will  go thorugh img box..
     let urls = rawText.match(/\bhttps?:\/\/\S+/gi)
+
     //console.log(urls.length)
-    for( var u of urls){
-      //linkalt = u.slice(u.indexOf('//')+2,25)+'...'
-      let linkalt = '링크'
-      bodyText.innerHTML += linkalt.link(u)+'\n'
+    if(urls!=null){
+      for( var u of urls){
+        //linkalt = u.slice(u.indexOf('//')+2,25)+'...'
+        let linkalt = '링크'
+        bodyText.innerHTML += linkalt.link(u)+'\n'
       }
+
 
     let rawText2 = rawText
     for( var u of urls){
@@ -267,9 +374,13 @@ function eventBodyload(event){
       rawText2 = remain
 
       //console.log(rawText2,'r2')
-
     }
     bodyText.innerHTML+=rawText2
+    }
+    else{
+      bodyText.innerHTML+=rawText
+    }
+
 
 
     //bodyText.innerText += myJson['bodytext']

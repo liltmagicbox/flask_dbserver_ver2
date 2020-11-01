@@ -1,5 +1,6 @@
 
 //imgframe init.
+pagenum=1
 
 function initImgframe(outFrameid = 'imgFrame'){
 
@@ -7,7 +8,7 @@ function initImgframe(outFrameid = 'imgFrame'){
   viewList = Object.keys(datas)// here was first used nolist  glovally
   outFrame = document.getElementById(outFrameid)
   outFrame.innerHTML=""
-  fillImgframe(viewList,outFrame,1)
+  fillImgframe(viewList,outFrame,pagenum)
 }
 
 function initImgcol(){
@@ -18,7 +19,7 @@ function initImgcol(){
   let colNum = getColnum()
   let outFrame = getImgframe()
   setupCol(outFrame,colNum)
-  fillImgcol(viewList,outFrame,1)
+  fillImgcol(viewList,outFrame,pagenum)
 }
 
 function getImgframe(){

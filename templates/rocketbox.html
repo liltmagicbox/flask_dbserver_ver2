@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="./static/css/flexcol.css">
 
     <script type="text/javascript" src="./static/headdict.json"> </script>
+    <script type="text/javascript" src="./static/fluiddict.json"> </script>
 
     <script type="text/javascript" src="./static/js/sortnolist.js"> </script>
     <script type="text/javascript" src="./static/js/tagquery.js"> </script>
@@ -112,7 +113,7 @@
 
 
 
-    <footer>
+    <footer id='foot'>
       <p> 2020 lovelive gallery </p>
     </footer>
 
@@ -148,7 +149,7 @@
     function searchPop() {
       let sign = window.prompt("검색어를 입력해?").toUpperCase() /*, "생일" 냅두면초기화용.*/
       if(sign == null ){sign = ""}
-      
+
       let keyList = Object.keys(datas)
       let searchList =[]
       for(var k of keyList){
@@ -183,7 +184,44 @@ function closeNav() {
   document.getElementById("voidScreen").style.width = '0';
 }
 
+window.addEventListener('scroll', loadcheck)
+function loadcheck(){
+  //outFrame = document.getElementById('imgFrame')
+  outFrame = getImgframe()
+  a =document.getElementById('foot')
+  //console.log(a)
+  //console.log(window.scrollY+window.innerHeight >a.offsetParent.offsetHeight)
+  if(window.scrollY+window.innerHeight+500 >a.offsetParent.offsetHeight == true){
+    pagenum+=1
+    //window.removeEventListener('scroll', loadcheck)
+    fillImgcol(viewList,outFrame,pagenum)
+    //window.addEventListener('scroll', loadcheck)
+  }
+  else{
+  for(col of document.getElementsByClassName('imgCol') ){
+    lastone = col.getElementsByClassName('imgBox')[col.getElementsByClassName('imgBox').length-1]
+    if( window.scrollY+800 > lastone.offsetTop ){
+      pagenum+=1
+      //window.removeEventListener('scroll', loadcheck)
+      fillImgcol(viewList,outFrame,pagenum)
+      //window.addEventListener('scroll', loadcheck)
+      //Forced reflow while executing JavaScript took 60ms
+    }
+  }
+}
 
+  //lastone=document.getElementsByClassName('imgBox')[document.getElementsByClassName('imgBox').length-1]
+  /*if( window.scrollY > lastone.offsetTop-lastone.offsetHeight ){
+    pagenum+=1
+    fillImgcol(viewList,outFrame,pagenum)
+  }*/
+
+}
+
+//function drag(e) { e.preventDefault() };
+
+//_C.addEventListener('mousemove', drag, false);
+//_C.addEventListener('touchmove', drag, false);
 
   </script>
   </body>

@@ -76,8 +76,10 @@ function eventTagclick(event){
     //if(value == 1){tagSet_strong.add(name)}
     //else if(value == 0){tagSet.delete(name)}
     if(value == 1){tagSet.add(name)}
-    else if(value == 2){tagSet.delete(name); tagSet_strong.add(name);}
-    else if(value == 0){tagSet_strong.delete(name)}
+    //else if(value == 2){tagSet.delete(name); tagSet_strong.add(name);}
+    //else if(value == 0){tagSet_strong.delete(name)}
+
+    else if(value == 0){tagSet.delete(name)}
   }
 
   //else if(className == 'tagB_user'){
@@ -142,7 +144,7 @@ function tagsetSort(){
 
   let unionList = allList
   if(queryList_user.length != 0){unionList = unionU(userTagdict,queryList_user)}
-  let interList = tagQueryInter(datas,unionList,queryList)// inter 1st.character.
+  let interList = tagQueryInter(fluid,unionList,queryList)// inter 1st.character.
   if(queryList_big.length != 0){interList = intersectSlit(interList, userTagdict,queryList_big)}//if online
   if(queryList_exclusive.length != 0){interList = exclusiveSlit(interList, userTagdict, queryList_exclusive)}
   return interList
@@ -235,7 +237,7 @@ function setColor(){
     "쁘랭땅":[코토리,호노카,하나요],
 
     "노조에리":[노조미,에리],
-    "니코마키":[노조미,에리],
+    "니코마키":[니코,마키],
     "린파나":[린,하나요],
     "코토우미":[코토리,우미],
 

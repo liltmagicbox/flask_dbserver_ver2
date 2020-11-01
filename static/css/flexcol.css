@@ -61,11 +61,67 @@ border-radius: 50%;
 
 }
 
+.stop_scroll{
+  overflow: hidden;
+}
+
+.innerviewer .imgTitle{
+  text-align: center;
+  color:white;
+  margin: 5px auto;
+  font-size: 1.1rem;
+  overflow: visible;
+}
+
+.innerviewer .imgDate{
+  text-align: center;
+  margin: 0 auto;
+  color:white;
+}
+.innerviewer a{
+  text-align: center;
+  color:white;
+}
+.innerviewer p{
+  text-align: center;
+  color:white;
+}
+.innerviewer img{
+  width: auto;
+  max-width: 100%;
+}
+
+.innerviewer{
+  color:white;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  background-color: rgba(0,0,0,0.7);
+
+  margin: 0 auto;
+  height: 100%;
+  max-width: 520px;
 
 
+  /*position: fixed;
+  top: 0;
+  left: 0;*/
+  transition: 0.3s;
+  overflow: scroll;
+}
 
 
-
+.overviewer{
+  text-align: center;
+  z-index: 1;
+  background-color: rgba(50,50,50, 0.7);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transition: 0.3s;
+}
 
 
 
@@ -538,6 +594,10 @@ nav ul li a{
     width: 100%; //of outer size. if not, img fullsize.
   }
 
+.moreloadbutton{
+  width: 100px;
+  height: 70px;
+}
 
 
   @media screen and (max-width: 600px) {
