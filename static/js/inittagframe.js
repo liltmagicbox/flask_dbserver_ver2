@@ -89,6 +89,8 @@ function tagReset(){
   tagSet_big= new Set([])
   tagSet_strong= new Set([])
 
+  trueBanner()
+
   //resetBigguy()//no other way.. not by input,change. inf.loop warn.
   viewList = Object.keys(datas)
   fillNewlist(viewList)
