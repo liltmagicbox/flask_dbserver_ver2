@@ -307,7 +307,8 @@ function eventBodyload(event){
   //"parameter1=value_1&parameter2=value%202&parameter3=value%263"
 
   //http://liltbox.iptime.org:25252/fetch/bodytext/10399976
-  let url = window.location.href.replace( window.location.pathname , '')
+  //let url = window.location.href.replace( window.location.pathname , '')
+  let url = window.location.href.split(window.location.pathname)[0]
   let fetchurl = url+'/fetch?'+query
   fetch(fetchurl)
   .then( function(response){return response.json()})

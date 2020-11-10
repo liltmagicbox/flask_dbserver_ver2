@@ -22,6 +22,8 @@
     <script type="text/javascript" src="./static/js/initimgframe.js"> </script>
     <script type="text/javascript" src="./static/js/initsortframe.js"> </script>
 
+    <script type="text/javascript" src="./static/js/shasha.js"> </script>
+
 
 
   </head>
@@ -59,15 +61,29 @@
       </div>
     </div>
 
+    <div class = "loginBox" id = "loginBox">
 
-    <form class = "loginBox" id = "loginBox" pop = 0 action="#" method="post" autocomplete="on">
+    <form pop = 0 action="/login" method="post" autocomplete="on">
       <br>
-      <span>user : </span><input type="text" name="user"><br>
-      <span>spell : </span><input type="text" name="spell"><br>
+      <span>닉네임 : </span><input type="text" name="username"><br>
+      <span>주문 : </span><input type="text" name="sha"><br>
       <!--span>data : </span><input type="text" name="data"><br-->
       <br>
       <button type="submit" formmethod="POST">로그인</button>
     </form>
+
+
+    <form action="/newuser" method="post">
+      <span>닉네임 : </span><input type="text" name="username"><br>
+      <span>주문 : </span><input type="text" name="sha"><br>
+      <!--span>data : </span><input type="text" name="data"><br-->
+      <button type="submit" formmethod="POST">생성</button>
+    </form>
+
+    </div>
+
+
+
 
 
 

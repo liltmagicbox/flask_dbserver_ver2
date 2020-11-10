@@ -10,6 +10,7 @@ import fluiddb
 # addtagu(user,no,text)
 # addtag(user,no,text)
 # addcomm(user,no,text,time)
+import userdb
 from jsonio import *
 
 from flask import send_from_directory, send_file
@@ -66,12 +67,7 @@ def hellow():
    return 'hello'
 
 
-#업로드 HTML 렌더링
-@app.route('/upload')
-def render_file():
-   return render_template('upload.html')
 
-#업로드 HTML 렌더링
 @app.route('/view')
 def viewmain():
    return render_template('rocketbox.html')
@@ -145,12 +141,12 @@ def headExport():
 @app.route('/backupdatas')
 def backup():
     global datas
-    print(datas)
+    #print(datas)
     nostr = backupDatas(datas)
     return str(len(datas))+'datas backup no: '+nostr
 datas = {}
 def backupDatas(datas=datas):
-    print(datas)
+    #print(datas) #too many , too slow. it's for test..
     flist = os.listdir()
     no=0
     while 'b{}_datas.json'.format(no) in flist:
@@ -185,7 +181,7 @@ def fetchtag():
     user='핫산테크'
     key='캐릭터태그'
     if taglist[0]=='':
-        fluiddb.retext(user,no,key,)
+        fluiddb.cleartext(user,no,key,)
 
     if fluiddb.fluidset(no) == True:#made this time.
         for text in taglist:
@@ -194,7 +190,7 @@ def fetchtag():
             else:
                 print('add first ok')
     else:#alreadywas. rewrite
-        fluiddb.retext(user,no,key,)
+        fluiddb.cleartext(user,no,key,)
         for text in taglist:
             #fluiddb.subtext(user,no,key,text)
             fluiddb.addtext(user,no,key,text)
@@ -268,10 +264,78 @@ def bodyload():
 
 
 
+import zipfile
+from werkzeug.utils import secure_filename
+#업로드 HTML 렌더링
+@app.route('/upload')
+def render_file():
+    return render_template('filedrop.html')
 
+#파일 업로드 처리
+#https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
+@app.route('/fileUploadDone', methods = [ 'GET','POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+
+        #저장할 경로 + 파일명
+        #f.save(secure_filename(f.filename))
+        if f.filename[-3:] != 'zip':
+            return 'zip파일을 줘!'
+
+        #3742729 byte. 3742kb, 3.7mb.
+        #cursor reset required
+        #size = len(f.read())
+        #print(size)
+        #50 * (1024 ** 2)
+
+        #f.save('dumpjar/'+f.filename)
+        sname = secure_filename(f.filename)
+        f.save( 'dumpjar/'+ sname)
+        #return 'uploads 디렉토리 -> 파일 업로드 성공!'
+        #return 'dumpjar 폴더에 업로드완료.'#+get_filelist()
+
+        f = open( 'dumpjar/'+ sname ,'rb')
+        size = len(f.read())
+        f.close()
+        size=str(size/1024/1024)[:4]
+        #return 'dumpjar 폴더에 {}업로드완료.{}MB'.format(sname,size)
+
+        zf = zipfile.ZipFile( 'dumpjar/'+ sname )
+        zf.extractall('dumpjar/')
+        zf.close()
+        oldlen = len(datas)
+        scann = jarScan()
+        os.remove( 'dumpjar/'+ sname )
+        # return '''dumpjar 폴더에 {}압축해제완료.{}MB'.format(sname,size)
+        # <br>
+        # <a href="/jarscan">업로드한 파일 처리하기</a>
+        # '''
+
+        #listjar = os.listdir('dumpjar')
+        #return '처리완료:{},{}MB <br>이전 목록 길이:{} <br> {}<br>폴더안에잔여파일(있으면안됨) :{}'.format(sname,size,oldlen,scann,listjar)
+
+        for i in os.listdir('dumpjar'):
+	        os.remove('dumpjar/'+i)
+        return '처리완료:{},{}MB <br>이전 목록 길이:{} <br> {}'.format(sname,size,oldlen,scann)
+
+
+@app.route('/login' , methods = [ 'GET','POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        sha = request.form['sha']
+        return userdb.login(username,sha)
+
+@app.route('/newuser' , methods = [ 'GET','POST'])
+def newuser():
+    if request.method == 'POST':
+        username = request.form['username']
+        sha = request.form['sha']
+        return userdb.newuser(username,sha)
 
 if __name__ == "__main__":
-    
+
     try:
         jsonName = 'datas.json'
         datas = minidb.loadJson( jsonName )

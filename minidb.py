@@ -240,7 +240,7 @@ def jarScan(datas):
             newDatas_resized = resizeImg(newDatas)#and adds to newDatas.
             datas = appendDict(datas , newDatas_resized)#returns atleast datas, not {}.
             print('datas len:',len(datas) )
-            txt2dict.saveJson(datas,jsonName)
+            #txt2dict.saveJson(datas,jsonName)           #for more bigger..
     return datas #for at least..?
 
 

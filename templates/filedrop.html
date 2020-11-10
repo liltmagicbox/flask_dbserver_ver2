@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>file upload</title>
+    <style media="screen">
+      #drop_zone {
+  border: 5px solid blue;
+  width:  200px;
+  height: 100px;
+}
+    </style>
+  </head>
+  <body>
+
+    <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+      <p>드래그&드롭 안 되니 얌전히 파일선택 눌러서 업로드 하자 ...</p>
+    </div>
+
+
+    <form method = "POST" action = "/fileUploadDone" enctype = "multipart/form-data">
+         <input type = "file" name = "file" accept=".zip" >
+         <button type = "submit">눌러서 처리하기 </button>
+    </form>
+
+    <p>zip파일만 됨.규격에맞는것만지원되어요</p>
+    <p>폴더 안엔, 텍스트파일이 단 하나 있거나, 설정.txt 로 되어있으면 됨. </p>
+    <p> ['번호','제목','작성자','날짜','본문'] 은 반드시 포함되어야하며</p>
+    <p>태그는 본문에 태그 = 태그명1,태그명2,태그명3 으로 적으면 읽힐것이다.</p>
+    <p>아무튼 아래 양식에 맞게. 번호는 글 고유id같은거라 중복이면안되므로 딴거로바꾸셈. 숫자만됨</p>
+    <img src="./static/resource/업로드가이드.png" alt="예시">
+
+<pre>
+번호 = 1112315
+제목 = 제목을입력하자
+작성자 = 업로더명에가깝다
+날짜 = 2012.12.12
+본문 = 아무튼본문이다. 태그를 넣고싶으면 이 아래에넣고
+태그 = 태그명1, 태그명2, 태그명3
+</pre>
+
+    <button type="button" name="button">양식txt다운받기는 없다. 위 내용을 복사하고 메모장에.</button>
+
+
+  </body>
+
+  <script type="text/javascript">
+
+    function dragOverHandler(ev) {
+  //console.log('File(s) in drop zone');
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+}
+
+    function dropHandler(ev) {
+  console.log('File(s) dropped');
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  if (ev.dataTransfer.items) {
+    // Use DataTransferItemList interface to access the file(s)
+    for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+      // If dropped items aren't files, reject them
+      if (ev.dataTransfer.items[i].kind === 'file') {
+        var file = ev.dataTransfer.items[i].getAsFile();
+        console.log('... file[' + i + '].name = ' + file.name);
+      }
+    }
+  } else {
+    // Use DataTransfer interface to access the file(s)
+    for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+      console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+    }
+
+
+  }
+  console.log( ev.dataTransfer.files )
+}
+  </script>
+</html>
