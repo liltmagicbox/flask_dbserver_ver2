@@ -403,7 +403,9 @@ def fetchlogin():
     username = requestdict['username']
     sha = requestdict['sha']
     print(username,sha)
-    data = { 'bodytext' : userdb.login(username,sha) }
+    #token = userdb.user.get(username).get('token')
+    token = userdb.login(username,sha)#token='no' if not in.
+    data = { 'token': token, 'username':username }
     return jsonify(data)
 
 @app.route('/fetchnewuser' , methods = [ 'POST'])

@@ -15,6 +15,8 @@ print("userdb loading..")
 # username, sha, salt, token
 user={}
 def newuser(username,sha):
+    if len(username)>20:
+        return 'too long username'
     if user.get(username) == None:
         salt = username
         tsalt = 'nosaltfrenchfries'
@@ -25,11 +27,11 @@ def newuser(username,sha):
 
 def login(username,sha):
     if user.get(username) == None:
-        return 'not log in.. '#for secure reason..
+        return 'no'#for secure reason..
     else:
         salt = user[username]["salt"]
         if user[username]["sha"] == shasha(sha+salt):
             #return 'log in! hello {}'.format(username)
             return user[username]["token"]
         else:
-            return 'not log in.. '
+            return 'no'

@@ -2,8 +2,9 @@
 <html lang="kr" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>새로운인간의탄생</title>
+    <title>새로운유저의탄생</title>
     <script type="text/javascript" src="./static/js/shasha.js"> </script>
+    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
   </head>
   <body>
 
@@ -20,28 +21,7 @@
     fetchnewuserB = document.getElementById("fetchnewuserB")
     fetchnewuserB.addEventListener('click', fetchnewuser)
 
-    function fetchnewuser(){
-      let username = document.getElementById("username").value
-      let sha = sha256(encodeURI( document.getElementById("sha").value ))
-      let params = { 'username': username, 'sha': sha,}
-      let url = window.location.href.split(window.location.pathname)[0]
-      let fetchurl = url+'/fetchnewuser'
-    fetch(fetchurl,
-    {
-      method: 'POST', // or 'PUT'
-      body: JSON.stringify(params), // data can be `string` or {object}!
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    })
-    //.then( function(response){return response.json()})
-    .then( response => response.json() )
-    .then(function(myJson){
-      let rawText = myJson['bodytext']
-      console.log(rawText)
-    })
 
-    }
 
   </script>
 </html>

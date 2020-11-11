@@ -23,6 +23,7 @@
     <script type="text/javascript" src="./static/js/initsortframe.js"> </script>
 
     <script type="text/javascript" src="./static/js/shasha.js"> </script>
+    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
 
 
 
@@ -64,18 +65,17 @@
 
     <div class = "loginBox" id = "loginBox">
 
-    <form pop = 0 action="/login" method="post" autocomplete="on">
-      <br>
-      <span>닉네임 : </span><input type="text" name="username" id="username"><br>
-      <span>주문 : </span><input type="text" name="sha" id="sha"><br>
-      <!--span>data : </span><input type="text" name="data"><br-->
-      <br>
-      <button type="submit" formmethod="POST">로그인</button>
-    </form>
-
-    <button id= "fetchloginB" type="button" name="button">패치로그인</button>
-
-    <button type="button" name="button"> <a href="/newuserpage">새로만들기</a> </button>
+      <form pop = 0 action="/login" method="post" autocomplete="on">
+        <br>
+        <span>닉네임 : </span><input type="text" name="username" id="username"><br>
+        <span>주문 : </span><input type="text" name="sha" id="sha"><br>
+        <!--span>data : </span><input type="text" name="data"><br-->
+        <br>
+        <!--button type="submit" formmethod="POST">로그인</button-->
+      </form>
+      <button id= "fetchloginB" type="button" name="button">로그인</button>
+      <button id= "fetchnewuserB" type="button" name="button"> <a href="/newuserpage">새로만들기</a> </button>
+      <button id= "fetchlogoutB" type="button" name="button" hidden>로그아웃</button>
 
     </div>
 
@@ -239,34 +239,8 @@ function loadcheck(){
 
 fetchloginB = document.getElementById("fetchloginB")
 fetchloginB.addEventListener('click', fetchlogin)
-
-function fetchlogin(){
-  let username = document.getElementById("username").value
-  let sha = sha256(encodeURI( document.getElementById("sha").value ))
-  //let sha = document.getElementById("sha").value
-
-  let params = { 'username': username, 'sha': sha,}
-  let url = window.location.href.split(window.location.pathname)[0]
-  let fetchurl = url+'/fetchlogin'
-
-//fetch(fetchurl, {method: 'POST', body: JSON.stringify( params )} )
-fetch(fetchurl,
-{
-  method: 'POST', // or 'PUT'
-  body: JSON.stringify(params), // data can be `string` or {object}!
-  headers:{
-    'Content-Type': 'application/json'
-  }
-})
-
-//.then( function(response){return response.json()})
-.then( response => response.json() )
-.then(function(myJson){
-  let rawText = myJson['bodytext']
-  console.log(rawText)
-})
-
-}
+fetchlogoutB = document.getElementById("fetchlogoutB")
+fetchlogoutB.addEventListener('click', fetchlogout)
 
   </script>
   </body>
