@@ -200,7 +200,8 @@ function overLayview(){
     .map(k => esc(k) + '=' + esc(params[k]))
     .join('&');
 
-  let url = window.location.href.replace( window.location.pathname , '')
+  //let url = window.location.href.replace( window.location.pathname , '')
+  let url = window.location.href.split(window.location.pathname)[0]
   let fetchurl = url+'/fetch?'+query
 
   fetch(fetchurl)

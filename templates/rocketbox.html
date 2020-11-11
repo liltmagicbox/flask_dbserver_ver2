@@ -35,7 +35,8 @@
       <button type="button" id = "menuOpenB" name="button"><img src="./static/resource/menuicon.png" alt="메뉴열기"></button>
 
       <div class="headerTitle" >
-        <img src="./static/resource/headlogo.jpg" alt="LoveLive!">
+        <a href="/view"> <img src="./static/resource/headlogo.jpg" alt="타이틀로고"> </a>
+
       </div>
 
       <button type="button" id = "searchB" name="button"><img src="./static/resource/searchicon.png" alt="검색"></button>
@@ -65,20 +66,16 @@
 
     <form pop = 0 action="/login" method="post" autocomplete="on">
       <br>
-      <span>닉네임 : </span><input type="text" name="username"><br>
-      <span>주문 : </span><input type="text" name="sha"><br>
+      <span>닉네임 : </span><input type="text" name="username" id="username"><br>
+      <span>주문 : </span><input type="text" name="sha" id="sha"><br>
       <!--span>data : </span><input type="text" name="data"><br-->
       <br>
       <button type="submit" formmethod="POST">로그인</button>
     </form>
 
+    <button id= "fetchloginB" type="button" name="button">패치로그인</button>
 
-    <form action="/newuser" method="post">
-      <span>닉네임 : </span><input type="text" name="username"><br>
-      <span>주문 : </span><input type="text" name="sha"><br>
-      <!--span>data : </span><input type="text" name="data"><br-->
-      <button type="submit" formmethod="POST">생성</button>
-    </form>
+    <button type="button" name="button"> <a href="/newuserpage">새로만들기</a> </button>
 
     </div>
 
@@ -238,6 +235,38 @@ function loadcheck(){
 
 //_C.addEventListener('mousemove', drag, false);
 //_C.addEventListener('touchmove', drag, false);
+
+
+fetchloginB = document.getElementById("fetchloginB")
+fetchloginB.addEventListener('click', fetchlogin)
+
+function fetchlogin(){
+  let username = document.getElementById("username").value
+  let sha = sha256(encodeURI( document.getElementById("sha").value ))
+  //let sha = document.getElementById("sha").value
+
+  let params = { 'username': username, 'sha': sha,}
+  let url = window.location.href.split(window.location.pathname)[0]
+  let fetchurl = url+'/fetchlogin'
+
+//fetch(fetchurl, {method: 'POST', body: JSON.stringify( params )} )
+fetch(fetchurl,
+{
+  method: 'POST', // or 'PUT'
+  body: JSON.stringify(params), // data can be `string` or {object}!
+  headers:{
+    'Content-Type': 'application/json'
+  }
+})
+
+//.then( function(response){return response.json()})
+.then( response => response.json() )
+.then(function(myJson){
+  let rawText = myJson['bodytext']
+  console.log(rawText)
+})
+
+}
 
   </script>
   </body>
