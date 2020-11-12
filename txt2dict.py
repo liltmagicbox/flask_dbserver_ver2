@@ -8,6 +8,7 @@
 """
 def parseTxt(txtFile, parseKeys, multiLine ):
     """
+    dosent return ''
     file = .txt, utf8.
     parseKeys = list of factor names. ex:'item_value'
     multiLine = a factor that contains multi line. the only one.
@@ -25,7 +26,8 @@ def parseTxt(txtFile, parseKeys, multiLine ):
         value = i[i.find('=')+1:].strip()
         #print(key)
         if key in parseKeys:
-            parseDict[key] = value
+            if value != '':
+                parseDict[key] = value
         else:
             if multiLine in parseDict.keys():
                 if parseDict[multiLine][-1] == '\n':
@@ -56,6 +58,11 @@ if __name__ == '__main__':
     file= '크롤링결과버전0.7.txt'
     parseKeys = ['번호','제목','작성자','날짜','태그','본문']
     multiLine = '본문'
-    result = parseTxt(file,parseKeys,multiLine)
+
+    #result = parseTxt(file,parseKeys,multiLine)
     #checkDict(result)
-    print('result',result)
+    #print('result',result)
+    txtfile = input('txtfilename :')
+    for i in parseTxt( txtfile, parseKeys, multiLine ).items():
+        print(i)
+    input('press to exit')
