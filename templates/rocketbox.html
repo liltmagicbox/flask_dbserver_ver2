@@ -65,18 +65,6 @@
 
     <div class = "loginBox" id = "loginBox">
 
-      <form pop = 0 action="/login" method="post" autocomplete="on">
-        <br>
-        <span>닉네임 : </span><input type="text" name="username" id="username"><br>
-        <span>주문 : </span><input type="text" name="sha" id="sha"><br>
-        <!--span>data : </span><input type="text" name="data"><br-->
-        <br>
-        <!--button type="submit" formmethod="POST">로그인</button-->
-      </form>
-      <button id= "fetchloginB" type="button" name="button">로그인</button>
-      <button id= "fetchnewuserB" type="button" name="button"> <a href="/newuserpage">새로만들기</a> </button>
-      <button id= "fetchlogoutB" type="button" name="button" hidden>로그아웃</button>
-
     </div>
 
 
@@ -236,11 +224,8 @@ function loadcheck(){
 //_C.addEventListener('mousemove', drag, false);
 //_C.addEventListener('touchmove', drag, false);
 
-
-fetchloginB = document.getElementById("fetchloginB")
-fetchloginB.addEventListener('click', fetchlogin)
-fetchlogoutB = document.getElementById("fetchlogoutB")
-fetchlogoutB.addEventListener('click', fetchlogout)
+loginBox =document.getElementById('loginBox')
+makeloginbox(loginBox)
 
   </script>
   </body>
