@@ -569,10 +569,16 @@ nav ul li a{
   margin-bottom :0;
 }
 
+.imgBox pre{
+  /*word-break: break-all;*/
+  white-space: pre-wrap;
+}
   .imgTitle{
     font-size : 0.9rem;
-    max-height: 2.3rem;
-    overflow: hidden;
+    /*font-size : 1vw;
+    max-height: 2.3rem; title bad..
+    overflow: hidden;*/
+
     /*white-space:  pre-wrap;
     text-overflow: ellipsis;
     width: 20px;*/

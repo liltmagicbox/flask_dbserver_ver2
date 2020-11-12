@@ -98,7 +98,6 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   date.className = "imgDate"
   box.appendChild(date)
 
-
   let imgArea = document.createElement('div')
   imgArea.className = 'imgArea'
   imgArea.id = "imgArea_"+no
@@ -192,7 +191,7 @@ function overLayview(){
     im.src = resizePath+filename
     innerviewer.appendChild(im)
   }
-  let bodyText = document.createElement('p')
+  let bodyText = document.createElement('pre')
 
   let params = { 'no': no, 'key':'본문',}
   var esc = encodeURIComponent;
@@ -295,7 +294,7 @@ function eventBodyload(event){
   window.scroll(0, scrollYbeforeloadbody )
 
 
-  let bodyText = document.createElement('p')
+  let bodyText = document.createElement('pre')
   //bodyText.width = imgArea.clientWidth
   //box.appendChild(bodyText) why you here?!
 
