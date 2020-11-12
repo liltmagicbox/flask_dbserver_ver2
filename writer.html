@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>글쓰기모드!!</title>
+
+    <style>
+    html {
+      font-family: sans-serif;
+    }
+
+    form {
+      width: 600px;
+      background: #ccc;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid black;
+    }
+
+    form ol {
+      padding-left: 0;
+    }
+
+    form li, div > p {
+      background: #eee;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      list-style-type: none;
+      border: 1px solid black;
+    }
+
+    form img {
+      height: 64px;
+      order: 1;
+    }
+
+    form p {
+      line-height: 32px;
+      padding-left: 10px;
+    }
+
+    form label, form button, form #app_img{
+      background-color: #7F9CCB;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px ridge black;
+      font-size: 0.8rem;
+      height: auto;
+    }
+
+    form #app_img, form button:hover {
+      background-color: #2D5BA3;
+      color: white;
+    }
+
+    form #app_img, form button:active {
+      background-color: #0D3F8F;
+      color: white;
+    }
+  </style>
+
+  </head>
+  <body>
+
+    <form id="usrform" method = "POST" action = "http://liltbox.iptime.org:44444/fileUploadDone"
+       enctype = "multipart/form-data">
+       <h1>글을 씁니다.</h1>
+       <p>작성자: <input  type="name" name="username" ></p>
+       <p>제목: <input  type="title" name="title" ></p>
+       <p>태그: <input  type="tag" name="tag" ></p>
+       <hr>
+       <input type="file" id="app_img" name="image_uploads" accept="image/*" multiple>
+       <div class="preview">
+        <p>No files currently selected for upload</p>
+       </div>
+       <hr>
+       <label for="story">본문</label>
+       <br>
+       <textarea id="textbody" name="textbody" rows="5" cols="50" form="usrform"></textarea>
+       <br>
+       <button type = "submit"> 투고하기 </button>
+    </form>
+
+
+
+
+
+    <script>
+      const input = document.getElementById('app_img');
+      const preview = document.querySelector('.preview');
+
+      //input.style.opacity = 0;
+
+      input.addEventListener('change', updateImageDisplay);
+
+      function updateImageDisplay() {
+        while(preview.firstChild) {
+          preview.removeChild(preview.firstChild);
+        }
+
+        const curFiles = input.files;
+        if(curFiles.length === 0) {
+          const para = document.createElement('p');
+          para.textContent = 'No files currently selected for upload';
+          preview.appendChild(para);
+        } else {
+          const list = document.createElement('ol');
+          preview.appendChild(list);
+
+          for(const file of curFiles) {
+            const listItem = document.createElement('li');
+            const para = document.createElement('p');
+
+            if(validFileType(file)) {
+              para.textContent = `File name ${file.name}, file size ${returnFileSize(file.size)}.`;
+              const image = document.createElement('img');
+              image.src = URL.createObjectURL(file);
+
+              listItem.appendChild(image);
+              listItem.appendChild(para);
+            } else {
+              para.textContent = `File name ${file.name}: Not a valid file type. Update your selection.`;
+              listItem.appendChild(para);
+            }
+
+            list.appendChild(listItem);
+          }
+        }
+      }
+
+  // https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+      const fileTypes = [
+          'image/apng',
+          'image/bmp',
+          'image/gif',
+          'image/jpeg',
+          'image/pjpeg',
+          'image/png',
+          'image/svg+xml',
+          'image/tiff',
+          'image/webp',
+          `image/x-icon`
+      ];
+
+      function validFileType(file) {
+        return fileTypes.includes(file.type);
+      }
+
+      function returnFileSize(number) {
+        if(number < 1024) {
+          return number + 'bytes';
+        } else if(number > 1024 && number < 1048576) {
+          return (number/1024).toFixed(1) + 'KB';
+        } else if(number > 1048576) {
+          return (number/1048576).toFixed(1) + 'MB';
+        }
+      }
+    </script>
+
+  </body>
+</html>
+
+<!--
+https://enai.tistory.com/37
+https://sodocumentation.net/ko/flask/topic/5459/%ED%8C%8C%EC%9D%BC-%EC%97%85%EB%A1%9C%EB%93%9C
+<input type = "file" name = "file" accept="image/*" id ="app_img">
+ -->
