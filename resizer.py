@@ -7,9 +7,6 @@ import os
 from PIL import Image
 #it make more general..good.
 def resizeDir( targetDir, resizew=700,thumbw=300):
-    originkey = '원본'
-    resizedkey = '리사이즈'
-    thumbkey = '썸네일'
 
     origin_dir = 'origin'
     resized_dir = 'resized'
@@ -26,6 +23,12 @@ def resizeDir( targetDir, resizew=700,thumbw=300):
             imgList.append(f)
 
     #imgList=[]..
+
+    # break below. no img, no dirs!
+    if len(imgList)==0:
+        returnList=[[],[],[]]
+        return returnList
+
 
     originList = []
     resizedList = []
@@ -94,7 +97,8 @@ def resizeDir( targetDir, resizew=700,thumbw=300):
             #-----------origin----------------------
             osrcimg = os.path.join(targetDir,i)
             odestimg = os.path.join(targetDir, origin_dir ,i)
-            os.rename(osrcimg, odestimg)#move.
+            im = None# this was really problem!
+            os.rename(osrcimg, odestimg)#move. we considered lot, but to zip(origin)!
 
             originList.append(i)
             #-----------origin----------------------
@@ -113,8 +117,8 @@ def resizeDir( targetDir, resizew=700,thumbw=300):
     # imgDict[thumbkey] = thumbList
     #return imgDict
 
-    imgList=[]
-    imgList.append(originList)
-    imgList.append(resizedList)
-    imgList.append(thumbList)
-    return imgList
+    returnList=[]
+    returnList.append(originList)
+    returnList.append(resizedList)
+    returnList.append(thumbList)
+    return returnList
