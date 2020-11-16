@@ -117,8 +117,5 @@ def resizeDir( targetDir, resizew=700,thumbw=300):
     # imgDict[thumbkey] = thumbList
     #return imgDict
 
-    returnList=[]
-    returnList.append(originList)
-    returnList.append(resizedList)
-    returnList.append(thumbList)
+    returnList=[originList,resizedList,thumbList]
     return returnList
