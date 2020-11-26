@@ -52,3 +52,33 @@ def tokencheck(token):
         return tokens[token]#username
     else:
         return 'no'
+
+
+def getname(token):
+    if token in tokens:
+        return tokens[token]#username
+    else:
+        return 'noname'
+
+masters = set()
+managers = set()
+
+def newmaster(username):
+    if username in user:
+        masters.add(username)
+        return "welcome new master:{}".format(username)
+    else:
+        return "no user"
+
+def newmanager(username):
+    if username in user:
+        managers.add(username)
+        return "welcome new manager:{}".format(username)
+    else:
+        return "no user"
+
+def ismaster(username):
+    return username in masters
+
+def ismanager(username):
+    return username in managers

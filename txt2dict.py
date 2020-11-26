@@ -3,7 +3,7 @@
     parseTxt()
     file = .txt, utf8.
     parseKeys = list of factor names. ex:'item_value'
-    multiLine = a factor that contains multi line. the only one.
+    multiLine_key = a factor that contains multi line. the only one.
 
 """
 
@@ -40,12 +40,12 @@ def removeEnters( targetstr ):
     return returnstr
 
 
-def parseTxt(txtFile, parseKeys, multiLine ):
+def parseTxt(txtFile, parseKeys, multiLine_key ):
     """
     dosent return ''
     file = .txt, utf8.
     parseKeys = list of factor names. ex:'item_value'
-    multiLine = a factor that contains multi line. the only one.
+    multiLine_key = a factor that contains multi line. the only one.
     """
     #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
 
@@ -65,15 +65,15 @@ def parseTxt(txtFile, parseKeys, multiLine ):
     #if all keys match:
     if len(parseDict) == len(parseKeys):
         for i in readList[len(parseKeys) :]:
-            parseDict[multiLine] += i
+            parseDict[multiLine_key] += i
 
     if len(parseDict) != len(parseKeys):
-        parseDict[multiLine] = ""
+        parseDict[multiLine_key] = ""
         for i in readList:#full str list
-            parseDict[multiLine] += i
+            parseDict[multiLine_key] += i
 
     #remove enters. how clever!
-    parseDict[multiLine] = removeEnters( parseDict[multiLine] )
+    parseDict[multiLine_key] = removeEnters( parseDict[multiLine_key] )
 
     return parseDict
 
@@ -85,23 +85,18 @@ def checkDict(parseDict):
         e+=1
 
 
-from jsonio import *#includs json as well
+#from jsonio import *#includs json as well
 
-def saveVarjson(parsedDict,jsonFile,varName='datas'):
-    dump = json.dumps(parsedDict,ensure_ascii=False,indent = 4)
-    with open(jsonFile,'w',encoding='utf-8') as f:
-        f.write('var '+varName+' = ')
-        f.write(dump)
 
 if __name__ == '__main__':
     file= '크롤링결과버전0.7.txt'
     parseKeys = ['번호','제목','작성자','날짜','태그','본문']
-    multiLine = '본문'
+    multiLine_key = '본문'
 
-    #result = parseTxt(file,parseKeys,multiLine)
+    #result = parseTxt(file,parseKeys,multiLine_key)
     #checkDict(result)
     #print('result',result)
     txtfile = input('txtfilename :')
-    for i in parseTxt( txtfile, parseKeys, multiLine ).items():
+    for i in parseTxt( txtfile, parseKeys, multiLine_key ).items():
         print(i)
     input('press to exit')

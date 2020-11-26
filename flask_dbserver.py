@@ -224,9 +224,9 @@ def fetchParse():
     no = request.args.get('no')
     key = request.args.get('key')
     #request.query_string
-    print(no,key)
+    ##print(no,key)
     valueText = datas[no][key]
-    print(valueText)
+    ##print(valueText)
     #return( valueText )
     #data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}# it! works!
     data = { 'bodytext':valueText }
@@ -346,10 +346,11 @@ def upload_file():
         #return 'uploads 디렉토리 -> 파일 업로드 성공!'
         #return 'dumpjar 폴더에 업로드완료.'#+get_filelist()
 
-        f = open( 'dumpjar/'+ sname ,'rb')
-        size = len(f.read())
-        f.close()
-        size=str(size/1024/1024)[:4]
+        #f = open( 'dumpjar/'+ sname ,'rb')
+        #size = len(f.read())
+        #f.close()
+        #size=str(size/1024/1024)[:4]
+        size = getsize( join(jarname,sname) )//1024//1024
         #return 'dumpjar 폴더에 {}업로드완료.{}MB'.format(sname,size)
 
         zf = zipfile.ZipFile( 'dumpjar/'+ sname )

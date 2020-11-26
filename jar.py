@@ -1,32 +1,77 @@
-jar = 'jar'
-static = 'static'
-imgtower = 'static/imgtower'
+from os import listdir, mkdir, rename, remove
+from os.path import isfile, join, splitext, isdir, getsize
+from shutil import rmtree#remove not work if filled.rmtree(tempdir)
+from sys import exc_info#for log
+##from hashlib import sha256#for id10
+#from hashlib import sha256#for id10
+from uuid import uuid4
 
-#1. newdict,errlist  = getjar( preventSet)
-#2. appDict(old,new)
+#----------------------- user funcion variable
+import file2dir
+import txt2dict
+from resizer import resizeDir
 
-# O(n).. it prevents not add already.
-def appDict(oldDict,newDict):
-    errlist = []
-    for i in newDict:
-        if oldDict.get(i) == None:
-            oldDict[i] = newDict[i]
-        else:
-            errlist.append('appDict already!! at {}'.format(i))
-    return oldDict,errlist
+#from newdb import parseKeys, imgKeys,  jar_dir, errlog_dir, imgtower_dir , jarerrname
+#id_key, title_key, writer_key, date_key, body_key = parseKeys
+#multiLineKey = body_key#for txt2dict
+#originkey,resizedkey,thumbkey = imgKeys
+
+jar_dir = 'jar' #not to ./ . it's to attached.
+errlog_dir = 'static'
+imgtower_dir = 'static/imgtower'
+formakedirs = [jar_dir, errlog_dir, imgtower_dir]
+
+jarerrname = "errjar.txt"
+
+id_key = "번호"
+title_key = "제목"
+writer_key = "작성자"
+date_key = "날짜"
+body_key = "본문"
+parseKeys = [ id_key, title_key, writer_key, date_key, body_key]
+#custom option:"태그"
+originkey = "원본"
+resizedkey = "리사이즈"
+thumbkey = "썸네일"
+imgKeys = [originkey,resizedkey,thumbkey]
+
+multiLineKey = body_key#for txt2dict
+
+#----------------------- user funcion variable
+
+maxMB=20# >20MB, del.
+safeext = {'.jpg','.jpeg','.png','.gif','.webp','.bmp','.txt'}
+
+msgemptyjar = 'empty jar_dir'
+msgdirdir = "dir in dir.. deleted dir."
+msgnotsafe = "not img or txt.skip file."
+msgtoolarge = "too large file size.. skip file."
+
+errmultitxt = 'txt shall be only one! : '
+erremptydir = 'empty dir! : '
+errinpreventset = 'in preventSet ! : '
 
 
+#--------------for minimul dirs.
+def makedirs():
+    for i in formakedirs:
+        try:
+            os.mkdir(i)
+            print( "{} dir created".format(i) )
+        except:
+            pass
+makedirs()
+#--------------for minimul dirs.
 
+#------------------------------for errlog
 errlist=[]
 #for all log in here.
 def logerr():
-    with open('jarerr.txt','a',encoding='utf-8') as f:
+    with open( join(errlog_dir,jarerrname) ,'a',encoding='utf-8') as f:
         for i in errlist:
             f.write(i)
             f.write('\n')
-    #errlist.clear()# e=[] ,, works as assign.
-    #clear not each log. but a batch dude!
-    #do it just end of batch!ha!
+    #errlist.clear() in front of the loop.
 
 #-------------for log time.
 import datetime
@@ -35,111 +80,80 @@ def datestr():
     now = datetime.datetime.now()
     now=now.astimezone(tzinfo)
     return now.strftime("%Y.%m.%d %H:%M:%S")
-#-------------for log time.
-
-import txt2dir
-import txt2dict
-import os
-import shutil#os.remove not work if filled.shutil.rmtree(tempdir)
-import sys#for log
-
-from resizer import resizeDir
-import hashlib#for id10
-
-def makedirs():
-    try:
-        os.mkdir( './'+static )
-        print('statics created')
-    except:
-        pass
-    try:
-        os.mkdir( './'+imgtower )
-        print('imgtower in statics created')
-    except:
-        pass
-    try:
-        os.mkdir( jar )
-        print('jar created')
-    except:
-        pass
-    print('jar loading..all dirs ready')
-
-makedirs()
+#------------------------------for errlog
 
 
-#make only if exists. not guarantee each key is.
-parseKeys = ['번호','제목','작성자','날짜','본문']# all or not.
-multiLineKey = parseKeys[-1]
-#txt2dict requirement.
-
-#if not txt2dict, add. these are important.
-idkey = parseKeys[0]
-titlekey = parseKeys[1]
-
-originkey = 'origin'
-resizedkey = 'resized'
-thumbkey = 'thumb'
-
-#load jar, read txt, if not in dict:add , copy origins,move pastebin.
-#preventSet= set(adict.keys())
-# a in set is O1.
+# a in set or dict is O(1).
 def getJar(preventSet={}):
     """
-    returns new dict. fail, to pastebin.
-    let preventSet = oldDict ,, for live check. if getjar too slow, it may be.
+    returns new dict. if some fails, to pastebin.
     """
     errlist.clear()
 
-    #------in case txts in zip --------------------------
-    txts,elist = txt2dir.txt2dir(jar)
-    if len(elist)!=0:
-        tmpe=''
-        for i in elist:
-            tmpe+=i
-        errlist.append(tmpe)
+    # raw txts to dir:
+    txts,elist = file2dir.txt2dir(jar_dir)
+    errlist.extend(elist)
+    # raw imgs to dir:
+    imgs,elist = file2dir.img2dir(jar_dir)
+    errlist.extend(elist)
 
-    #------in case txts in zip --------------------------
-
-    #------pre check if dir in jar--------------------------
+    #------pre check dir is.
     dirList = []
-    for i in os.listdir(jar):
-        if os.path.isdir(  jar+'/'+i ):
+    for i in listdir(jar_dir):
+        if isdir(  join(jar_dir,i) ):
             dirList.append(i)
 
     if len(dirList) == 0:
-        print('no jar!')
-        return {} #think this will stop all func below..
-    #------pre check if dir in jar--------------------------
+        errlist.append( "{}:{}".format( datestr(),msgemptyjar) )
 
     newDatas = {} #for data insure.
 
     #noFolder is not full-path, only str.
     for noFolder in dirList:
-        noDir = os.path.join( jar,noFolder)
+        noDir = join( jar_dir,noFolder)
         try:
-            #1. check txt in dir.
+            #-------pre-process.remove dir already, except safeext, >maxMB.
+            indir = listdir( noDir )
+            if len(indir)==0:#not to occur resizer empty err.
+                raise Exception(erremptydir + str(noFolder))
+            for f in indir:
+                fdir = join(noDir,f)
+                if isdir( fdir ):
+                    rmtree( fdir )
+                    errlist.append( "{}:,{},{}".format(datestr(),fdir,msgdirdir) )
+                    continue# not to remove removed!
+                name,ext = splitext(f)
+                if not ext in safeext:
+                    remove( fdir )
+                    errlist.append( "{}:,{},{}".format(datestr(),fdir,msgnotsafe) )
+                    continue
+                elif getsize(fdir)//1024//1024 > maxMB:
+                    remove( fdir )
+                    errlist.append( "{}:,{},{}".format(datestr(),fdir,msgtoolarge) )
+
+
+
+            #----------------- txt file parser
             txtfiles = []
-            for f in os.listdir( noDir ):
-                if '.txt' in f.lower():
+            for f in listdir( noDir ):
+                name,ext = splitext(f)
+                if ext.lower() =='.txt':
                     txtfiles.append(f)
 
-            # 1:load 0:dir=name,id=sha(name) , 2~:expire!
             if len(txtfiles) == 1:
-                txtFile = os.path.join( noDir, txtfiles[0])
+                txtFile = join( noDir, txtfiles[0])
                 parsedDict = txt2dict.parseTxt(txtFile,parseKeys,multiLineKey)
             elif len(txtfiles) == 0:
                 parsedDict = {}
             elif len(txtfiles) > 1:
-                raise Exception('txt shall be only one! : ' + str(noFolder))
+                raise Exception(errmultitxt + str(noFolder))
             #parsedDict {} or {multiLineKey} or {parseKeys}
 
-            #fill dict minimum requirement.
-            # means it's not correct format. {} or {multiLineKey}
             if len(parsedDict) != len(parseKeys):
-                parsedDict[titlekey] = noFolder# title become folder name.
-                parsedDict[idkey] = '_'+hashlib.sha256( parsedDict[titlekey].encode() ).hexdigest()[:10]
-                # id == dirname.. and it prevents same dir name. #if crash, change name!
-                #if parsedDict.get(multiLineKey) = None. ...regard the minimum policy.
+                parsedDict[title_key] = noFolder
+                #parsedDict[id_key] = '_'+sha256( parsedDict[title_key].encode() ).hexdigest()[:10]
+                parsedDict[id_key] = '_'+str(uuid4())[:13]
+            #----------------- txt file parser
 
             #----------------------for custom dict additional option
             #del only [번역]---.
@@ -153,8 +167,9 @@ def getJar(preventSet={}):
             #----------------------for custom dict additional option
 
 
-            #2. we got dict anyway. txt done. now for img. origin created, remaining txt.
-            resizedlist = resizeDir(noDir)#0 origin 1 re 2 thumb.
+            #resizer. create imgs, get imglist.
+            resizedlist, elist = resizeDir(noDir,imgname = parsedDict[id_key] )#0 origin 1 re 2 thumb.
+            errlist.extend(elist)
             parsedDict[originkey] = resizedlist[0]
             parsedDict[resizedkey] = resizedlist[1]
             parsedDict[thumbkey] = resizedlist[2]
@@ -164,36 +179,44 @@ def getJar(preventSet={}):
             #no img, and no bodytext?! it's empty!
             #1. fullkeys, multiLineKey='--' or ''. imgonly, len!=0. txtonly, multiLineKey=''.
             if len(parsedDict[originkey])==0 and parsedDict.get(multiLineKey)==None:
-                raise Exception('empty! : ' + str(noFolder))
+                raise Exception(erremptydir + str(noFolder))
             # #if already, don't. fine.
-            if parsedDict[idkey] in preventSet:
-                raise Exception('in preventSet.. passing : ' + str(noFolder))
+            if parsedDict[id_key] in preventSet:
+                raise Exception(errinpreventset + str(noFolder))
             #--------------exceptions. not to bedeparted.!
 
 
             #3.what? ah. move to ..the.. storage.
             #assume already was not happens..   ..maybe.rollback, it can happen
 
-            #idkey  1113033 if crawl / hash10 if user.
-            idDir = os.path.join( imgtower, parsedDict[idkey] )
-            os.rename( noDir, idDir )
-            tmpKey = parsedDict[idkey]
+            #id_key  1113033 if crawl / hash10 if user.
+            idDir = join( imgtower_dir, parsedDict[id_key] )
+            rename( noDir, idDir )
+            tmpKey = parsedDict[id_key]
             newDatas[tmpKey] = parsedDict
 
         except Exception as e:
-            exc_info = sys.exc_info()#below except.
-            errmsg = exc_info[1],':at line',exc_info[2].tb_lineno
+            exc = exc_info()#below except.
+            errmsg = exc[1],':at line',exc[2].tb_lineno
 
             #byte err, 300lines..
-            errmsg = str(errmsg)[0:80]
-            print(errmsg)
-            errlist.append( "{}err while getjar,{},{}".format(datestr(),noFolder,errmsg) )
+            errmsg = str(errmsg)[0:280]
+            #print(errmsg)
+            errlist.append( "{}:,{},{}".format(datestr(),noFolder,errmsg) )
 
-            #os.remove( os.path.join(os.getcwd(),noDir) )#note it requires path, not dir. perm. error!
-            shutil.rmtree(noDir)
+            #remove( join(getcwd(),noDir) )#note it requires path, not dir. perm. error!
+            rmtree(noDir)
             continue#what is it? im not sure..
             #pass go through, continue break,next!
 
-    print( "newdatas:{},err:{}".format(len(newDatas),len(errlist) ) )
+    #print( "newdatas:{},err:{}".format(len(newDatas),len(errlist) ) )
     logerr()
+
+    #clean jar. both resizer, img2dict seems ram-safe.(err after load file)
+    for i in listdir(jar_dir):
+        idir = join(jar_dir,i)
+        if isdir( idir ):
+            rmtree( idir  )
+        if isfile( idir):
+            remove( idir )
     return newDatas,errlist
